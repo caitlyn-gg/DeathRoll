@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects;
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
@@ -21,6 +21,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] public static ICommandManager Commands { get; private set; } = null!;
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] public static IClientState ClientState { get; private set; } = null!;
+    [PluginService] public static IPlayerState PlayerState { get; private set; } = null!;
     [PluginService] public static IChatGui Chat { get; private set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static IPluginLog Log { get; private set; } = null!;
@@ -177,9 +178,8 @@ public sealed class Plugin : IDalamudPlugin
         if (!Configuration.On || State is GameState.NotRunning or GameState.Done or GameState.Crash)
             return;
 
-        var local = ClientState.LocalPlayer;
-        if (local?.HomeWorld.ValueNullable?.Name != null)
-            LocalPlayer = $"{local.Name}\uE05D{local.HomeWorld.Value.Name}";
+        if (PlayerState.IsLoaded && PlayerState.HomeWorld.ValueNullable?.Name != null)
+            LocalPlayer = $"{PlayerState.CharacterName}\uE05D{PlayerState.HomeWorld.Value.Name}";
 
         if (Configuration.ActiveBlocklist && Configuration.SavedBlocklist.Contains(fullName.Replace("\uE05D", "@")))
         {
